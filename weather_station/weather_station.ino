@@ -2,9 +2,11 @@
 #include "DaylightSensor.h"
 #include "EnvironmentSensor.h"
 #include "Logger.h"
+#include "MqttPublisher.h"
 #include "WaterLevelSensor.h"
 #include "WeatherReading.h"
 #include "WeatherReadingLogger.h"
+#include "secrets.h"
 
 const char *BOARD_LOG_SOURCE = "ESP32";
 
@@ -24,6 +26,10 @@ DaylightSensor daylightSensor(LDR_SIGNAL_PIN);
 WaterLevelSensor waterLevelSensor(WATER_SIGNAL_PIN, WATER_POWER_PIN,
                                   WATER_SETTLE_MS);
 AirQualitySensor airQualitySensor(MQ135_SIGNAL_PIN);
+MqttPublisher mqttPublisher(WIFI_SSID, WIFI_PASSWORD, MQTT_HOST, MQTT_PORT,
+                            DEVICE_ID);
+
+unsigned long lastReadingMs = 0;
 
 WeatherReading readAllSensors() {
   WeatherReading reading;
@@ -49,12 +55,21 @@ void setup() {
   environmentSensor.begin();
   waterLevelSensor.begin();
   airQualitySensor.begin();
+  mqttPublisher.begin();
 }
 
 void loop() {
-  WeatherReading reading = readAllSensors();
+  mqttPublisher.maintainConnection();
 
-  logWeatherReading(INFO, reading);
+  const unsigned long currentTimeMs = millis();
+  const bool isReadingDue =
+      currentTimeMs - lastReadingMs >= READING_INTERVAL_MS;
 
-  delay(READING_INTERVAL_MS);
+  if (isReadingDue) {
+    lastReadingMs = currentTimeMs;
+    WeatherReading reading = readAllSensors();
+
+    logWeatherReading(INFO, reading);
+    mqttPublisher.publishReading(reading);
+  }
 }
