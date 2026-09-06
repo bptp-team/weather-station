@@ -1,0 +1,50 @@
+name: Weather Station CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  tests:
+    name: Unit tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure
+        run: cmake -S test -B build -DCMAKE_BUILD_TYPE=Debug
+
+      - name: Build
+        run: cmake --build build
+
+      - name: Test
+        run: ctest --test-dir build --output-on-failure
+
+  firmware:
+    name: Compile firmware
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # secrets.h is deliberately not versioned, so the build uses the example
+      # values. They only have to compile, never to reach a real network.
+      - name: Provide local settings
+        run: cp weather_station/secrets.example.h weather_station/secrets.h
+
+      - name: Compile sketch for ESP32
+        uses: arduino/compile-sketches@v1
+        with:
+          fqbn: esp32:esp32:esp32
+          platforms: |
+            - name: esp32:esp32
+              source-url: https://espressif.github.io/arduino-esp32/package_esp32_index.json
+          libraries: |
+            - name: Adafruit BME280 Library
+            - name: Adafruit Unified Sensor
+            - name: PubSubClient
+          sketch-paths: |
+            - weather_station
