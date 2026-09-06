@@ -9,4 +9,8 @@
 #define MQTT_PORT 1883
 #define DEVICE_ID "station-01"
 
+// Optional: how often the station reads its sensors, in
+// milliseconds. Remove this line to keep the 10000 ms default.
+#define READING_INTERVAL_MS 10000
+
 #endif

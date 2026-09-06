@@ -29,13 +29,15 @@ the local network. Cloud services are not part of this setup.
     - PubSubClient
 3. Copy `weather_station/secrets.example.h` to
     `weather_station/secrets.h`.
-4. Edit `weather_station/secrets.h` with the Wi-Fi credentials and the LAN
-    address of the computer running Mosquitto.
+4. Edit `weather_station/secrets.h` with the Wi-Fi credentials, the LAN
+    address of the computer running Mosquitto and, optionally, the reading
+    interval.
 5. Open `weather_station/weather_station.ino`, select the ESP32 board and
     port, then upload the sketch.
 
 `secrets.h` is ignored by Git. Do not commit Wi-Fi passwords or other local
-credentials.
+settings. Anything that changes from one station or test run to the next
+belongs there, not in the sketch.
 
 Example local configuration:
 
@@ -45,7 +47,13 @@ Example local configuration:
 #define MQTT_HOST "192.168.1.20"
 #define MQTT_PORT 1883
 #define DEVICE_ID "station-01"
+#define READING_INTERVAL_MS 10000
 ```
+
+`READING_INTERVAL_MS` is optional: it sets how often the station reads its
+sensors, in milliseconds. Leave it out and the sketch falls back to 10000 ms.
+Change it in `secrets.h` while testing so the shorter interval never reaches a
+commit.
 
 `MQTT_HOST` must be the Docker host's LAN IP or a hostname resolvable by the
 ESP32. Do not use `localhost`: from the ESP32, `localhost` means the ESP32
@@ -57,7 +65,7 @@ Compose project.
 Each station publishes under its stable device ID:
 
 | Topic | Meaning | Payload |
-| --- | --- | --- |
+| ----- | ------- | ------- |
 | `weather/<device-id>/airTemperature` | Air temperature | Celsius, decimal text |
 | `weather/<device-id>/airPressure` | Atmospheric pressure | Pascals, decimal text |
 | `weather/<device-id>/airHumidity` | Relative humidity | Percent, decimal text |

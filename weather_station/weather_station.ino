@@ -8,11 +8,16 @@
 #include "WeatherReadingLogger.h"
 #include "secrets.h"
 
+// Local, non-versioned setting: define READING_INTERVAL_MS in secrets.h to
+// change the reading cadence without editing this file.
+#ifndef READING_INTERVAL_MS
+#define READING_INTERVAL_MS 10000
+#endif
+
 const char *BOARD_LOG_SOURCE = "ESP32";
 
 const unsigned long SERIAL_BAUD_RATE = 115200;
 const int ANALOG_READ_RESOLUTION_BITS = 12;
-const unsigned long READING_INTERVAL_MS = 10 * 1000;
 
 const uint8_t BME280_I2C_ADDRESS = 0x76;
 const int LDR_SIGNAL_PIN = 34;
