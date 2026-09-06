@@ -69,7 +69,7 @@ void MqttPublisher::publishReading(const WeatherReading &reading) {
   publishText("airTemperature", String(reading.temperatureCelsius, 2));
   publishText("airPressure", String(reading.pressurePascals, 2));
   publishText("airHumidity", String(reading.relativeHumidityPercent, 2));
-  publishText("daylight", String(reading.daylightState));
+  publishText("daylight", String(reading.daylightRaw));
   publishText("waterLevel", String(reading.waterLevelRaw));
   publishText("airQuality", String(reading.airQualityRaw));
 }

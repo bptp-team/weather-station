@@ -2,19 +2,21 @@
 
 #include <Arduino.h>
 
+#include "Logger.h"
+
 namespace {
-const char *DAYLIGHT_STATE_DAY = "DAY";
-const char *DAYLIGHT_STATE_NIGHT = "NIGHT";
+const char *LOG_SOURCE = "LDR";
 }
 
-DaylightSensor::DaylightSensor(int digitalSignalPin)
-    : digitalSignalPin(digitalSignalPin) {}
+DaylightSensor::DaylightSensor(int analogSignalPin)
+    : analogSignalPin(analogSignalPin) {}
 
-void DaylightSensor::begin() { pinMode(digitalSignalPin, INPUT); }
+void DaylightSensor::begin() {
+  analogSetPinAttenuation(analogSignalPin, ADC_11db);
 
-const char *DaylightSensor::readDaylightState() const {
-  // The LDR module pulls its digital output LOW once light is detected.
-  bool isLightDetected = digitalRead(digitalSignalPin) == LOW;
+  logEvent(INFO, LOG_SOURCE, "Initialized");
+}
 
-  return isLightDetected ? DAYLIGHT_STATE_DAY : DAYLIGHT_STATE_NIGHT;
+int DaylightSensor::readRawDaylight() const {
+  return analogRead(analogSignalPin);
 }

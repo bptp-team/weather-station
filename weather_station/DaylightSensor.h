@@ -1,18 +1,18 @@
 #ifndef DAYLIGHT_SENSOR_H
 #define DAYLIGHT_SENSOR_H
 
-// LDR module: tells whether the station is under daylight or in the dark.
+// LDR module: reports how much light is falling on the station.
 class DaylightSensor {
 public:
-  explicit DaylightSensor(int digitalSignalPin);
+  explicit DaylightSensor(int analogSignalPin);
 
   void begin();
 
-  // Returns "DAY" while there is light on the sensor, "NIGHT" otherwise.
-  const char *readDaylightState() const;
+  // Raw ADC value: higher means more light reaching the sensor.
+  int readRawDaylight() const;
 
 private:
-  int digitalSignalPin;
+  int analogSignalPin;
 };
 
 #endif

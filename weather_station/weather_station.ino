@@ -38,7 +38,7 @@ WeatherReading readAllSensors() {
   reading.pressurePascals = environmentSensor.readPressurePascals();
   reading.relativeHumidityPercent =
       environmentSensor.readRelativeHumidityPercent();
-  reading.daylightState = daylightSensor.readDaylightState();
+  reading.daylightRaw = daylightSensor.readRawDaylight();
   reading.waterLevelRaw = waterLevelSensor.readRawLevel();
   reading.airQualityRaw = airQualitySensor.readRawAirQuality();
 

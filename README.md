@@ -61,7 +61,7 @@ Each station publishes under its stable device ID:
 | `weather/<device-id>/airTemperature` | Air temperature | Celsius, decimal text |
 | `weather/<device-id>/airPressure` | Atmospheric pressure | Pascals, decimal text |
 | `weather/<device-id>/airHumidity` | Relative humidity | Percent, decimal text |
-| `weather/<device-id>/daylight` | Daylight state | Text |
+| `weather/<device-id>/daylight` | Raw daylight sensor value | Integer text |
 | `weather/<device-id>/waterLevel` | Raw water-level sensor value | Integer text |
 | `weather/<device-id>/airQuality` | Raw air-quality sensor value | Integer text |
 

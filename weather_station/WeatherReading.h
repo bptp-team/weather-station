@@ -6,7 +6,7 @@ struct WeatherReading {
   float temperatureCelsius;
   float pressurePascals;
   float relativeHumidityPercent;
-  const char *daylightState;
+  int daylightRaw;
   int waterLevelRaw;
   int airQualityRaw;
 };
