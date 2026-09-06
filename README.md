@@ -60,6 +60,23 @@ ESP32. Do not use `localhost`: from the ESP32, `localhost` means the ESP32
 itself. `MQTT_PORT` must match the host port published by the Mosquitto Docker
 Compose project.
 
+### Tests
+
+The firmware logic is unit tested on the development machine. `test/arduino/`
+holds a host stub of the small slice of the Arduino, Wi-Fi and PubSubClient
+APIs the sketch calls, so the modules under `weather_station/` can run without
+an ESP32 attached. Only CMake and a C++17 compiler are needed:
+
+```bash
+cmake -S test -B build
+cmake --build build
+ctest --test-dir build --output-on-failure
+```
+
+`EnvironmentSensor` is left out of the suite: it halts the board when the
+BME280 is missing, so nothing useful is left to assert. It is covered by the
+firmware compilation instead.
+
 ### MQTT topics
 
 Each station publishes under its stable device ID:
@@ -92,3 +109,14 @@ connections and should remain restricted to a trusted development network.
 The firmware services MQTT continuously and schedules sensor readings every
 10 seconds, so temporary Wi-Fi or broker outages can recover without rebooting
 the ESP32.
+
+## Continuous integration
+
+Every push and pull request against `main` runs
+`.github/workflows/weather-station.yaml`, with two independent jobs:
+
+- **Unit tests** builds the suite described above and runs it through CTest.
+- **Compile firmware** installs the ESP32 core and the three libraries, copies
+    `secrets.example.h` over `secrets.h` and compiles the sketch for
+    `esp32:esp32:esp32`. The example values only have to compile; they never
+    reach a real network.
